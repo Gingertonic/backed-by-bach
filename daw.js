@@ -1,10 +1,6 @@
 // Create an audio context (allow for legacy browsers)
 let audioContext
 let masterVolume
-let ch1Vol
-let ch2Vol
-let ch3Vol
-let ch4Vol
 let playback
 let chords = {
     "first": {
@@ -14,8 +10,8 @@ let chords = {
             {name: "fifth", f: 660, v: 0.3, ch: null},
             {name: "seventh", f: 770, v: 0.1, ch: null}
         ],
-        gain: 0.2,
-        volChannel: ch1Vol
+        gain: 0,
+        volChannel: null
     },
     "second": {
         notes: [
@@ -25,7 +21,7 @@ let chords = {
             {name: "seventh", f: 550, v: 0.1, ch: null}
         ],
         gain: 0,
-        volChannel: ch2Vol
+        volChannel: null
     },
     "third": {
         notes: [
@@ -35,7 +31,7 @@ let chords = {
             {name: "seventh", f: 660, v: 0.1, ch: null}
         ],
         gain: 0,
-        volChannel: ch3Vol
+        volChannel: null
     },
     "fourth": {
         notes: [
@@ -45,12 +41,12 @@ let chords = {
             {name: "seventh", f: 660, v: 0.1, ch: null}
         ],
         gain: 0,
-        volChannel: ch4Vol
+        volChannel: null
     }
 }
 
 let state = {
-    current: "first"
+    current: null
 }
 
 window.onload = function() {
@@ -73,14 +69,7 @@ const createChords = () => {
     sine.frequency.value = n.f 
     sine.type = "sine"
     sine.start();
-    let channel
-    switch(chord) {
-        case "first": channel = chords["first"].volChannel; break;
-        case "second": channel = ch2Vol; break;
-        case "third": channel = ch3Vol; break;
-        case "fourth": channel = ch4Vol; break;
-    }
-    sine.connect(channel);
+    sine.connect(chords[chord].volChannel);
     n.ch = sine
   } 
 
@@ -95,33 +84,20 @@ const setupStudio = () => {
     audioContext = new AudioContext();
    
     masterVolume = audioContext.createGain()
-
-    chords["first"].volChannel = audioContext.createGain()
-    ch2Vol = audioContext.createGain()
-    ch3Vol = audioContext.createGain()
-    ch4Vol = audioContext.createGain()
-    
-    chords["first"].volChannel.gain = chords["first"].gain 
-    ch2Vol.gain.value = chords["second"].gain
-    ch3Vol.gain.value = chords["third"].gain
-    ch4Vol.gain.value = chords["fourth"].gain
     masterVolume.gain.value = 0.2
 
-    chords["first"].volChannel.connect(masterVolume)
-    ch2Vol.connect(masterVolume)
-    ch3Vol.connect(masterVolume)
-    ch4Vol.connect(masterVolume)
- 
-    masterVolume.connect(audioContext.destination)
+    for(let ch in chords){
+        chords[ch].volChannel = audioContext.createGain()
+        chords[ch].volChannel.gain = chords[ch].gain
+        chords[ch].volChannel.connect(masterVolume)
+    }
 
     createChords() 
-    startPlayback()
 }
 
 const startPlayback = () => {
-    masterVolume.connect(audioContext.destination)
-    state.current = "first"
     playback = setInterval(playSequence, 1000)
+    masterVolume.connect(audioContext.destination)
 }
 
 const playSequence = () => {
@@ -133,38 +109,17 @@ const playSequence = () => {
         case "third":
             state.current = "fourth"; break;
         case "fourth":
-            clearInterval(playback)
-            masterVolume.disconnect(); break;
-        default: null
+            masterVolume.disconnect();
+            clearInterval(playback); state.current = null; break;
+        default: state.current = "first"; break;
     }
-    console.log("playing")
     for(let ch in chords){playChord(ch)}
-    // playC1()
-//     playC2()
-//     playC3()
-//     playC4()
 }
 
 const playChord = ch => { 
-    // debugger
     chords[ch].gain = (state.current === ch ? 0.1 : 0)
     chords[ch].volChannel.gain.value = chords[ch].gain 
 }
-
-// const playC2 = () => { 
-//     chords["second"].gain = (state.current === "second" ? 0.1 : 0)
-//     ch2Vol.gain.value = chords["second"].gain 
-// }
-
-// const playC3 = () => { 
-//     chords["third"].gain = (state.current === "third" ? 0.1 : 0)
-//     ch3Vol.gain.value = chords["third"].gain 
-// }
-
-// const playC4 = () => { 
-//     chords["fourth"].gain = (state.current === "fourth" ? 0.1 : 0)
-//     ch4Vol.gain.value = chords["fourth"].gain 
-// }
 
 const updateMasterVolume = e => {
     masterVolume.gain.value = (parseInt(e.target.value)/100)
