@@ -27,19 +27,19 @@ let chords = {
     },
     "third": {
         notes: [
-            {name: "root", f: 220, v: 0.4, ch: null},
-            {name: "third", f: 330, v: 0.2, ch: null},
-            {name: "fifth", f: 440, v: 0.3, ch: null},
-            {name: "seventh", f: 550, v: 0.1, ch: null}
+            {name: "root", f: 330, v: 0.4, ch: null},
+            {name: "third", f: 440, v: 0.2, ch: null},
+            {name: "fifth", f: 550, v: 0.3, ch: null},
+            {name: "seventh", f: 660, v: 0.1, ch: null}
         ],
         gain: 0
     },
     "fourth": {
         notes: [
-            {name: "root", f: 220, v: 0.4, ch: null},
-            {name: "third", f: 330, v: 0.2, ch: null},
-            {name: "fifth", f: 440, v: 0.3, ch: null},
-            {name: "seventh", f: 550, v: 0.1, ch: null}
+            {name: "root", f: 330, v: 0.4, ch: null},
+            {name: "third", f: 440, v: 0.2, ch: null},
+            {name: "fifth", f: 550, v: 0.3, ch: null},
+            {name: "seventh", f: 660, v: 0.1, ch: null}
         ],
         gain: 0
     }
@@ -52,7 +52,7 @@ let state = {
 window.onload = function() {
   document.getElementById('toggle').addEventListener('click', setupStudio);
   document.getElementById('play').addEventListener('click', startPlayback);
-  document.querySelectorAll('.slider').forEach(slider => slider.addEventListener('change', updateNote))
+  document.querySelectorAll('.chord-slider .slider').forEach(slider => slider.addEventListener('change', updateNote))
   document.querySelector('#master').addEventListener('change', updateMasterVolume)
 }
 
