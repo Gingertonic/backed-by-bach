@@ -14,7 +14,8 @@ let chords = {
             {name: "fifth", f: 660, v: 0.3, ch: null},
             {name: "seventh", f: 770, v: 0.1, ch: null}
         ],
-        gain: 0.2
+        gain: 0.2,
+        volChannel: ch1Vol
     },
     "second": {
         notes: [
@@ -23,7 +24,8 @@ let chords = {
             {name: "fifth", f: 440, v: 0.3, ch: null},
             {name: "seventh", f: 550, v: 0.1, ch: null}
         ],
-        gain: 0
+        gain: 0,
+        volChannel: ch2Vol
     },
     "third": {
         notes: [
@@ -32,7 +34,8 @@ let chords = {
             {name: "fifth", f: 550, v: 0.3, ch: null},
             {name: "seventh", f: 660, v: 0.1, ch: null}
         ],
-        gain: 0
+        gain: 0,
+        volChannel: ch3Vol
     },
     "fourth": {
         notes: [
@@ -41,7 +44,8 @@ let chords = {
             {name: "fifth", f: 550, v: 0.3, ch: null},
             {name: "seventh", f: 660, v: 0.1, ch: null}
         ],
-        gain: 0
+        gain: 0,
+        volChannel: ch4Vol
     }
 }
 
@@ -57,9 +61,7 @@ window.onload = function() {
 }
 
 const createChords = () => {
-    for (let ch in chords){
-        createNotes(ch)
-    }
+    for (let ch in chords){createNotes(ch)}
   }
 
   const createNotes = (chord) => {
@@ -73,7 +75,7 @@ const createChords = () => {
     sine.start();
     let channel
     switch(chord) {
-        case "first": channel = ch1Vol; break;
+        case "first": channel = chords["first"].volChannel; break;
         case "second": channel = ch2Vol; break;
         case "third": channel = ch3Vol; break;
         case "fourth": channel = ch4Vol; break;
@@ -93,18 +95,19 @@ const setupStudio = () => {
     audioContext = new AudioContext();
    
     masterVolume = audioContext.createGain()
-    ch1Vol = audioContext.createGain()
+
+    chords["first"].volChannel = audioContext.createGain()
     ch2Vol = audioContext.createGain()
     ch3Vol = audioContext.createGain()
     ch4Vol = audioContext.createGain()
     
-    ch1Vol.gain.value = chords["first"].gain 
+    chords["first"].volChannel.gain = chords["first"].gain 
     ch2Vol.gain.value = chords["second"].gain
     ch3Vol.gain.value = chords["third"].gain
     ch4Vol.gain.value = chords["fourth"].gain
     masterVolume.gain.value = 0.2
 
-    ch1Vol.connect(masterVolume)
+    chords["first"].volChannel.connect(masterVolume)
     ch2Vol.connect(masterVolume)
     ch3Vol.connect(masterVolume)
     ch4Vol.connect(masterVolume)
@@ -135,31 +138,33 @@ const playSequence = () => {
         default: null
     }
     console.log("playing")
-    playC1()
-    playC2()
-    playC3()
-    playC4()
+    for(let ch in chords){playChord(ch)}
+    // playC1()
+//     playC2()
+//     playC3()
+//     playC4()
 }
 
-const playC1 = () => { 
-    chords["first"].gain = (state.current === "first" ? 0.1 : 0)
-    ch1Vol.gain.value = chords["first"].gain 
+const playChord = ch => { 
+    // debugger
+    chords[ch].gain = (state.current === ch ? 0.1 : 0)
+    chords[ch].volChannel.gain.value = chords[ch].gain 
 }
 
-const playC2 = () => { 
-    chords["second"].gain = (state.current === "second" ? 0.1 : 0)
-    ch2Vol.gain.value = chords["second"].gain 
-}
+// const playC2 = () => { 
+//     chords["second"].gain = (state.current === "second" ? 0.1 : 0)
+//     ch2Vol.gain.value = chords["second"].gain 
+// }
 
-const playC3 = () => { 
-    chords["third"].gain = (state.current === "third" ? 0.1 : 0)
-    ch3Vol.gain.value = chords["third"].gain 
-}
+// const playC3 = () => { 
+//     chords["third"].gain = (state.current === "third" ? 0.1 : 0)
+//     ch3Vol.gain.value = chords["third"].gain 
+// }
 
-const playC4 = () => { 
-    chords["fourth"].gain = (state.current === "fourth" ? 0.1 : 0)
-    ch4Vol.gain.value = chords["fourth"].gain 
-}
+// const playC4 = () => { 
+//     chords["fourth"].gain = (state.current === "fourth" ? 0.1 : 0)
+//     ch4Vol.gain.value = chords["fourth"].gain 
+// }
 
 const updateMasterVolume = e => {
     masterVolume.gain.value = (parseInt(e.target.value)/100)
