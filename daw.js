@@ -5,6 +5,7 @@ let ch1Vol
 let ch2Vol
 let ch3Vol
 let ch4Vol
+let playback
 let chords = {
     "first": {
         notes: [
@@ -50,6 +51,7 @@ let state = {
 
 window.onload = function() {
   document.getElementById('toggle').addEventListener('click', setupStudio);
+  document.getElementById('play').addEventListener('click', startPlayback);
   document.querySelectorAll('.slider').forEach(slider => slider.addEventListener('change', updateNote))
   document.querySelector('#master').addEventListener('change', updateMasterVolume)
 }
@@ -109,13 +111,17 @@ const setupStudio = () => {
  
     masterVolume.connect(audioContext.destination)
 
-    createChords()
-
-    setInterval(playback, 1000)
+    createChords() 
+    startPlayback()
 }
 
-const playback = () => {
-    
+const startPlayback = () => {
+    masterVolume.connect(audioContext.destination)
+    state.current = "first"
+    playback = setInterval(playSequence, 1000)
+}
+
+const playSequence = () => {
     switch(state.current){
         case "first": 
             state.current = "second"; break;
@@ -124,15 +130,15 @@ const playback = () => {
         case "third":
             state.current = "fourth"; break;
         case "fourth":
-            state.current = "first"; break;
+            clearInterval(playback)
+            masterVolume.disconnect(); break;
         default: null
     }
-    console.log(state.current)
+    console.log("playing")
     playC1()
     playC2()
     playC3()
     playC4()
-   
 }
 
 const playC1 = () => { 
