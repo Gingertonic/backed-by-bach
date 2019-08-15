@@ -21,12 +21,31 @@ let chords = {
             {name: "seventh", f: 550, v: 0.1, ch: null}
         ],
         gain: 0
+    },
+    "third": {
+        notes: [
+            {name: "root", f: 220, v: 0.4, ch: null},
+            {name: "third", f: 330, v: 0.2, ch: null},
+            {name: "fifth", f: 440, v: 0.3, ch: null},
+            {name: "seventh", f: 550, v: 0.1, ch: null}
+        ],
+        gain: 0
+    },
+    "fourth": {
+        notes: [
+            {name: "root", f: 220, v: 0.4, ch: null},
+            {name: "third", f: 330, v: 0.2, ch: null},
+            {name: "fifth", f: 440, v: 0.3, ch: null},
+            {name: "seventh", f: 550, v: 0.1, ch: null}
+        ],
+        gain: 0
     }
 }
 
 window.onload = function() {
   document.getElementById('bob').addEventListener('click', setupStudio);
   document.querySelectorAll('.slider').forEach(slider => slider.addEventListener('change', updateNote))
+  document.querySelector('#master').addEventListener('change', updateMasterVolume)
 }
 
 const createChords = () => {
@@ -80,6 +99,8 @@ const setupStudio = () => {
 const playback = () => {
     playC1()
     playC2()
+    playC3()
+    playC4()
 }
 
 const playC1 = () => { 
@@ -90,4 +111,8 @@ const playC1 = () => {
 const playC2 = () => { 
     chords["second"].gain = (chords["second"].gain === 0 ? 0.1 : 0)
     ch2Vol.gain.value = chords["second"].gain 
+}
+
+const updateMasterVolume = e => {
+    masterVolume.gain.value = (parseInt(e.target.value)/100)
 }
