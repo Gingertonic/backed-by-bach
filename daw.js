@@ -3,6 +3,8 @@ let audioContext
 let masterVolume
 let ch1Vol
 let ch2Vol
+let ch3Vol
+let ch4Vol
 let chords = {
     "first": {
         notes: [
@@ -11,7 +13,7 @@ let chords = {
             {name: "fifth", f: 660, v: 0.3, ch: null},
             {name: "seventh", f: 770, v: 0.1, ch: null}
         ],
-        gain: 0.05
+        gain: 0.2
     },
     "second": {
         notes: [
@@ -42,8 +44,12 @@ let chords = {
     }
 }
 
+let state = {
+    current: "first"
+}
+
 window.onload = function() {
-  document.getElementById('bob').addEventListener('click', setupStudio);
+  document.getElementById('toggle').addEventListener('click', setupStudio);
   document.querySelectorAll('.slider').forEach(slider => slider.addEventListener('change', updateNote))
   document.querySelector('#master').addEventListener('change', updateMasterVolume)
 }
@@ -63,7 +69,13 @@ const createChords = () => {
     sine.frequency.value = n.f 
     sine.type = "sine"
     sine.start();
-    let channel = chord === "first" ? ch1Vol : ch2Vol
+    let channel
+    switch(chord) {
+        case "first": channel = ch1Vol; break;
+        case "second": channel = ch2Vol; break;
+        case "third": channel = ch3Vol; break;
+        case "fourth": channel = ch4Vol; break;
+    }
     sine.connect(channel);
     n.ch = sine
   } 
@@ -81,13 +93,19 @@ const setupStudio = () => {
     masterVolume = audioContext.createGain()
     ch1Vol = audioContext.createGain()
     ch2Vol = audioContext.createGain()
+    ch3Vol = audioContext.createGain()
+    ch4Vol = audioContext.createGain()
     
     ch1Vol.gain.value = chords["first"].gain 
     ch2Vol.gain.value = chords["second"].gain
+    ch3Vol.gain.value = chords["third"].gain
+    ch4Vol.gain.value = chords["fourth"].gain
     masterVolume.gain.value = 0.2
 
     ch1Vol.connect(masterVolume)
     ch2Vol.connect(masterVolume)
+    ch3Vol.connect(masterVolume)
+    ch4Vol.connect(masterVolume)
  
     masterVolume.connect(audioContext.destination)
 
@@ -97,20 +115,44 @@ const setupStudio = () => {
 }
 
 const playback = () => {
+    
+    switch(state.current){
+        case "first": 
+            state.current = "second"; break;
+        case "second":
+            state.current = "third"; break;
+        case "third":
+            state.current = "fourth"; break;
+        case "fourth":
+            state.current = "first"; break;
+        default: null
+    }
+    console.log(state.current)
     playC1()
     playC2()
     playC3()
     playC4()
+   
 }
 
 const playC1 = () => { 
-    chords["first"].gain = (chords["first"].gain === 0 ? 0.1 : 0)
+    chords["first"].gain = (state.current === "first" ? 0.1 : 0)
     ch1Vol.gain.value = chords["first"].gain 
 }
 
 const playC2 = () => { 
-    chords["second"].gain = (chords["second"].gain === 0 ? 0.1 : 0)
+    chords["second"].gain = (state.current === "second" ? 0.1 : 0)
     ch2Vol.gain.value = chords["second"].gain 
+}
+
+const playC3 = () => { 
+    chords["third"].gain = (state.current === "third" ? 0.1 : 0)
+    ch3Vol.gain.value = chords["third"].gain 
+}
+
+const playC4 = () => { 
+    chords["fourth"].gain = (state.current === "fourth" ? 0.1 : 0)
+    ch4Vol.gain.value = chords["fourth"].gain 
 }
 
 const updateMasterVolume = e => {
