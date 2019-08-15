@@ -51,7 +51,7 @@ const createChords = () => {
 
 const updateNote = e => {
     let chord = chords[e.currentTarget.parentNode.id]
-    note = chord.find(n => n.name == e.target.id)
+    note = chord.notes.find(n => n.name == e.target.id)
     note.ch.frequency.value = parseInt(e.target.value)
 }
 
@@ -83,15 +83,11 @@ const playback = () => {
 }
 
 const playC1 = () => { 
-    console.log("triggered")
     chords["first"].gain = (chords["first"].gain === 0 ? 0.1 : 0)
-    console.log(chords["first"].gain)
     ch1Vol.gain.value = chords["first"].gain 
 }
 
 const playC2 = () => { 
-    console.log("triggered")
     chords["second"].gain = (chords["second"].gain === 0 ? 0.1 : 0)
-    console.log(chords["second"].gain)
     ch2Vol.gain.value = chords["second"].gain 
 }
