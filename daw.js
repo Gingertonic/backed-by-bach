@@ -1,8 +1,12 @@
 // Create an audio context (allow for legacy browsers)
 let audioContext
 let volume
+let root
+let third
+let fifth
+let seventh
+let notes = [root, third, fifth, seventh]
 
-// Existing code unchanged.
 window.onload = function() {
   document.getElementById('bob').addEventListener('click', function() {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -14,11 +18,12 @@ window.onload = function() {
 
     createChord()
   });
+
+  document.getElementById('root').addEventListener('change', updateRoot)
 }
 
 
 const createChord = () => {
-    notes = [440, 523.25, 698.46]
     notes.forEach(createNote)
   }
 
@@ -29,3 +34,9 @@ const createChord = () => {
     sine.start();
     sine.connect(volume);
   } 
+
+const updateRoot = e => {
+    console.log(e.target.value)
+    root = e.target.value
+    createChord()
+}
