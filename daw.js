@@ -1,27 +1,33 @@
 // Create an audio context (allow for legacy browsers)
 let audioContext
 let masterVolume
-let firstChord = [
-    {name: "root", f: 440, v: 0.4, ch: null},
-    {name: "third", f: 550, v: 0.2, ch: null},
-    {name: "fifth", f: 660, v: 0.3, ch: null},
-    {name: "seventh", f: 770, v: 0.1, ch: null}
-]
-
-// let root = 440
-// let third = 550
-// let fifth = 660
-// let seventh = 770
-// let notes = [root, third, fifth, seventh]
+let chords = {
+    "first": [
+        {name: "root", f: 440, v: 0.4, ch: null},
+        {name: "third", f: 550, v: 0.2, ch: null},
+        {name: "fifth", f: 660, v: 0.3, ch: null},
+        {name: "seventh", f: 770, v: 0.1, ch: null}
+    ],
+    "second": [
+        {name: "root", f: 440, v: 0.4, ch: null},
+        {name: "third", f: 550, v: 0.2, ch: null},
+        {name: "fifth", f: 660, v: 0.3, ch: null},
+        {name: "seventh", f: 770, v: 0.1, ch: null}
+    ]
+}
 
 window.onload = function() {
   document.getElementById('bob').addEventListener('click', setupStudio);
   document.querySelectorAll('.slider').forEach(slider => slider.addEventListener('change', updateNote))
 }
 
-
 const createChord = () => {
-    firstChord.forEach(createNote)
+    for (let ch in chords){
+        chords[ch].forEach(createNote)
+    }
+
+    // chords.forEach((k,v) => v.forEach(createNote))
+    // chords["first"].forEach(createNote)}
   }
 
  const createNote = n => {
@@ -34,11 +40,9 @@ const createChord = () => {
   } 
 
 const updateNote = e => {
-    note = firstChord.find(n => n.name == e.target.id)
+    let chord = chords[e.currentTarget.parentNode.id]
+    note = chord.find(n => n.name == e.target.id)
     note.ch.frequency.value = parseInt(e.target.value)
-    // root.stop()
-    // root.start()
-    // createChord()
 }
 
 const setupStudio = () => {
