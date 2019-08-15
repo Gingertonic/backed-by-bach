@@ -16,7 +16,7 @@ let firstChord = [
 
 window.onload = function() {
   document.getElementById('bob').addEventListener('click', setupStudio);
-  document.getElementById('root').addEventListener('change', updateRoot)
+  document.querySelectorAll('.slider').forEach(slider => slider.addEventListener('change', updateNote))
 }
 
 
@@ -33,7 +33,7 @@ const createChord = () => {
     n.ch = sine
   } 
 
-const updateRoot = e => {
+const updateNote = e => {
     note = firstChord.find(n => n.name == e.target.id)
     note.ch.frequency.value = parseInt(e.target.value)
     // root.stop()
